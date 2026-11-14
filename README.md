@@ -1,14 +1,26 @@
-# claude-anki-flashcards
+<div align="center">
+
+<img src="img/mascot.png" alt="claude-anki-flashcards mascot" width="220">
+
+# ✦ claude-anki-flashcards ✦
 
 Turn the notes of an Obsidian vault into **Anki flashcards**, folder by folder, with [Claude Code](https://claude.com/claude-code).
+
+[![License: MIT](https://img.shields.io/badge/license-MIT-7962d9)](LICENSE)
+[![Claude Code skill](https://img.shields.io/badge/Claude%20Code-skill-58dbe2)](https://claude.com/claude-code)
+[![Obsidian](https://img.shields.io/badge/Obsidian-1.12%2B-7962d9?logo=obsidian&logoColor=white)](https://obsidian.md)
+[![Anki](https://img.shields.io/badge/Anki-26.09-58dbe2)](https://apps.ankiweb.net)
 
 ```
 /anki-deck courses/linux
 ```
 
+</div>
+
 Claude reads every note in `courses/linux/`, writes flashcards for them into `flashcards/courses/linux/`, and syncs them to an Anki deck named `courses::linux`. Run it again later: only new or modified notes are processed, edited cards are updated in Anki (with their review history kept), and removed cards are deleted.
 
-**Your notes are never modified.**
+> [!NOTE]
+> **Your notes are never modified.**
 
 ---
 
