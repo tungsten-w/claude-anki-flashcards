@@ -26,6 +26,8 @@ import zipfile
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
+# Repo layout (skill/anki-deck/) or flat skill package (install.py next to SKILL.md).
+SKILL_SRC = HERE / "skill" / "anki-deck" if (HERE / "skill" / "anki-deck").is_dir() else HERE
 ANKICONNECT_ID = "2055492159"
 ANKICONNECT_URL = f"https://ankiweb.net/shared/download/{ANKICONNECT_ID}?v=2.1&p=250000"
 PLUGIN_ID = "obsidian-to-anki-plugin"
@@ -313,7 +315,8 @@ def install_skill(vault, cards_dir, models, keep_config):
     dest = vault / ".claude" / "skills" / "anki-deck"
     dest.mkdir(parents=True, exist_ok=True)
     for name in ("SKILL.md", "anki_cards.py"):
-        shutil.copy2(HERE / "skill" / "anki-deck" / name, dest / name)
+        if (SKILL_SRC / name).resolve() != (dest / name).resolve():
+            shutil.copy2(SKILL_SRC / name, dest / name)
     cfg_path = dest / "config.json"
     old = read_json(cfg_path, {})
     cfg = {"cards_dir": cards_dir, "anki_url": ANKI_URL, "curly_cloze": False, "models": models}
@@ -345,7 +348,7 @@ def main():
     say(f"Vault: {vault}")
 
     if args.skill_only:
-        install_skill(vault, cards_dir, read_json(HERE / "skill/anki-deck/config.json", {}).get("models") or {}, True)
+        install_skill(vault, cards_dir, read_json(SKILL_SRC / "config.json", {}).get("models") or {}, True)
         return
 
     install_ankiconnect(find_anki_dir(args.anki_dir))

@@ -2,3 +2,4 @@ __pycache__/
 *.pyc
 skill/anki-deck/config.json
 .DS_Store
+agensi/*.zip
