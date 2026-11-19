@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>anki-deck — Obsidian notes to Anki flashcards</title>
+  <meta name="description" content="A Claude Code skill that turns the notes of an Obsidian vault into Anki flashcards, folder by folder, and keeps them in sync with their review history.">
+  <meta name="theme-color" content="#775fd9">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta property="og:title" content="anki-deck — Obsidian notes to Anki flashcards">
+  <meta property="og:description" content="Type one command in Claude Code. Get a synced Anki deck from your notes.">
+  <meta property="og:type" content="website">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav" id="nav">
+  <a class="brand" href="#top" aria-label="anki-deck, back to top">
+    <svg class="brand-cat" viewBox="0 0 1024 1024" aria-hidden="true">
+      <defs>
+        <linearGradient id="bgGradSmall" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#ffbcff"/><stop offset=".5" stop-color="#e8dcc6"/><stop offset="1" stop-color="#d0fd94"/>
+        </linearGradient>
+      </defs>
+      <rect width="1024" height="1024" rx="190" fill="url(#bgGradSmall)"/>
+      <path d="M100 78 255 183 125 355Z M595 100 648 28 688 132Z" fill="#775fd9"/>
+      <circle cx="512" cy="512" r="417" fill="#775fd9"/>
+      <path d="M367 430 490 480 M797 440 C815 418 832 398 840 372" stroke="#58dbe2" stroke-width="44" stroke-linecap="round" fill="none"/>
+    </svg>
+    <span>anki-deck</span>
+  </a>
+  <nav class="nav-links" aria-label="Main">
+    <a href="#demo">Demo</a>
+    <a href="#project">Project</a>
+    <a href="#how">How it works</a>
+    <a href="#install">Install</a>
+  </nav>
+  <a class="btn btn-sm btn-primary" href="https://www.agensi.io/" rel="noopener noreferrer" target="_blank">Get it</a>
+</header>
+
+<main id="main">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero" id="top">
+    <div class="blob b1" aria-hidden="true"></div>
+    <div class="blob b2" aria-hidden="true"></div>
+    <div class="blob b3" aria-hidden="true"></div>
+
+    <div class="hero-copy">
+      <p class="eyebrow"><span class="dot"></span> Claude Code skill · Obsidian · Anki</p>
+      <h1>Your notes,<br><span class="grad">turned into flashcards.</span></h1>
+      <p class="lead">Point Claude at a folder of your Obsidian vault. It writes the Anki cards worth learning, and keeps them in sync each time your notes change, without losing your review history.</p>
+
+      <div class="cmd" role="group" aria-label="Command">
+        <code><span class="cmd-prompt">›</span> /anki-deck courses/linux</code>
+        <button class="copy" type="button" data-copy="/anki-deck courses/linux" aria-label="Copy command">Copy</button>
+      </div>
+
+      <div class="ctas">
+        <a class="btn btn-primary" href="https://www.agensi.io/" rel="noopener noreferrer" target="_blank">Get it on Agensi <span aria-hidden="true">→</span></a>
+        <a class="btn btn-ghost" href="https://github.com/tungsten-w/claude-anki-flashcards" rel="noopener noreferrer" target="_blank">View on GitHub</a>
+      </div>
+
+      <ul class="meta">
+        <li>Your notes are never modified</li>
+        <li>Any Anki language</li>
+        <li>Python 3.9+, zero dependencies</li>
+      </ul>
+    </div>
+
+    <div class="hero-art" aria-hidden="true">
+      <div class="halo"></div>
+      <svg class="cat" viewBox="0 0 1024 1024">
+        <path d="M100 78 255 183 125 355Z M595 100 648 28 688 132Z" fill="#775fd9"/>
+        <circle cx="512" cy="512" r="417" fill="#775fd9"/>
+        <g class="eyes">
+          <path d="M367 430 490 480 M797 440 C815 418 832 398 840 372" stroke="#58dbe2" stroke-width="44" stroke-linecap="round" fill="none"/>
+        </g>
+      </svg>
+      <div class="fcard f1"><small>Basic</small>In nvim, which command saves and quits?</div>
+      <div class="fcard f2"><small>Cloze</small><span class="cloze">[…]</span> jumps to the start of the file</div>
+      <div class="fcard f3"><small>courses::linux</small><b>+18</b> new cards</div>
+    </div>
+  </section>
+
+  <!-- ============ DEMO ============ -->
+  <section class="section" id="demo">
+    <div class="section-head reveal">
+      <p class="kicker">Demo</p>
+      <h2>One command. A whole deck.</h2>
+      <p>Here is what happens when you run <code>/anki-deck</code> on a folder of course notes.</p>
+    </div>
+
+    <div class="demo reveal" id="demoWin">
+      <div class="demo-bar">
+        <span class="lights" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="demo-title">~/vault — claude</span>
+        <button class="replay" type="button" id="replay" aria-label="Replay the demo">↻ Replay</button>
+      </div>
+      <div class="demo-body">
+        <div class="term" id="term" aria-live="off"></div>
+        <div class="anki" aria-hidden="true">
+          <div class="anki-head">
+            <span class="anki-logo">✦</span> Anki
+          </div>
+          <div class="deck">
+            <span class="deck-name">courses::linux</span>
+            <span class="count c-new"><b id="cNew">0</b> new</span>
+            <span class="count c-upd"><b id="cUpd">0</b> updated</span>
+            <span class="count c-del"><b id="cDel">0</b> deleted</span>
+          </div>
+          <div class="stack" id="stack"></div>
+          <div class="review" id="review">
+            <div class="flip-inner">
+              <div class="face front"><small>Front</small><p>In nvim, which command saves and quits?</p></div>
+              <div class="face back"><small>Back</small><p><code>:wq</code> (or <code>ZZ</code> in normal mode)</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="progress" aria-hidden="true"><span id="prog"></span></div>
+    </div>
+    <p class="demo-note reveal">Simulated run, based on the real output of the skill. Card wording is written by Claude from your notes.</p>
+  </section>
+
+  <!-- ============ PROJECT ============ -->
+  <section class="section" id="project">
+    <div class="section-head reveal">
+      <p class="kicker">The project</p>
+      <h2>Claude does the thinking.<br>The plugin does the bookkeeping.</h2>
+      <p>Writing good flashcards is the slow part of spaced repetition. <b>anki-deck</b> hands that part to Claude, and leaves the mechanical sync to proven open-source tools.</p>
+    </div>
+
+    <div class="split">
+      <article class="panel panel-purple reveal">
+        <h3>Claude Code, via <code>/anki-deck</code></h3>
+        <ul class="ticks">
+          <li>Reads every note of the folder you point at</li>
+          <li>Picks what is worth remembering: definitions, commands, formulas, pitfalls</li>
+          <li>Writes self-contained questions, in the language of the note</li>
+          <li>Chooses basic, reversed or cloze cards</li>
+          <li>Updates the cards of a note when you edit it</li>
+        </ul>
+      </article>
+      <article class="panel panel-cyan reveal">
+        <h3>Obsidian_to_Anki + AnkiConnect</h3>
+        <ul class="ticks">
+          <li>Sends the card files to Anki</li>
+          <li>Writes each card's ID back into its file</li>
+          <li>Updates existing cards in place, so your review history is kept</li>
+          <li>Deletes cards you removed</li>
+          <li>Runs locally, on <code>127.0.0.1</code></li>
+        </ul>
+      </article>
+    </div>
+
+    <div class="stats reveal">
+      <div><b>0</b><span>notes modified, ever</span></div>
+      <div><b>1</b><span>command to build a deck</span></div>
+      <div><b>3</b><span>card types: basic, reversed, cloze</span></div>
+      <div><b>∞</b><span>re-runs, only changes are processed</span></div>
+    </div>
+  </section>
+
+  <!-- ============ HOW IT WORKS ============ -->
+  <section class="section" id="how">
+    <div class="section-head reveal">
+      <p class="kicker">How it works</p>
+      <h2>From a note to a review, in four hops.</h2>
+    </div>
+
+    <ol class="pipeline">
+      <li class="node reveal">
+        <span class="num">1</span>
+        <h3>Your notes</h3>
+        <p>Plain Markdown in your vault. Left untouched.</p>
+        <code>courses/linux/nvim.md</code>
+      </li>
+      <li class="node reveal">
+        <span class="num">2</span>
+        <h3>Card files</h3>
+        <p>Claude writes them in a mirror folder.</p>
+        <code>flashcards/courses/linux/nvim.md</code>
+      </li>
+      <li class="node reveal">
+        <span class="num">3</span>
+        <h3>AnkiConnect</h3>
+        <p>The Obsidian plugin pushes them to Anki's local API.</p>
+        <code>127.0.0.1:8765</code>
+      </li>
+      <li class="node reveal">
+        <span class="num">4</span>
+        <h3>Your deck</h3>
+        <p>Folders become decks, with tags.</p>
+        <code>courses::linux</code>
+      </li>
+    </ol>
+
+    <div class="rerun reveal">
+      <h3>Run it again whenever you like</h3>
+      <p>Each note is hashed. On the next run, the skill sorts your folder like this:</p>
+      <div class="chips">
+        <span class="chip chip-new"><b>new</b> cards written</span>
+        <span class="chip chip-changed"><b>changed</b> cards fixed, IDs kept</span>
+        <span class="chip chip-ok"><b>ok</b> skipped</span>
+        <span class="chip chip-orphan"><b>orphan</b> you're asked first</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CARD FORMAT ============ -->
+  <section class="section" id="cards">
+    <div class="section-head reveal">
+      <p class="kicker">Under the hood</p>
+      <h2>Readable cards you can edit by hand.</h2>
+      <p>Every card lives in a plain Markdown file next to your notes. Fix a typo there, and it is fixed in Anki on the next sync.</p>
+    </div>
+
+    <div class="split split-code">
+      <pre class="code reveal" tabindex="0" aria-label="Example card file"><span class="m">---</span>
+<span class="f">source:</span> "[[courses/linux/nvim]]"
+<span class="f">source_hash:</span> "9f2c…"
+<span class="m">---</span>
+<span class="f">TARGET DECK:</span> courses::linux
+<span class="f">FILE TAGS:</span> courses linux
+
+<span class="k">START</span>
+Basic
+<span class="f">Front:</span> In nvim, which command saves and quits?
+<span class="f">Back:</span> `:wq` (or `ZZ` in normal mode)
+<span class="c">&lt;!--ID: 1731942087123--&gt;</span>
+<span class="k">END</span>
+
+<span class="k">START</span>
+Cloze
+<span class="f">Text:</span> In nvim, {{c1::`gg`}} jumps to the start
+of the file and {{c2::`G`}} to the end.
+<span class="k">END</span></pre>
+
+      <div class="try reveal">
+        <button class="flip" type="button" aria-pressed="false" aria-label="Flashcard. Press to flip.">
+          <span class="flip-inner">
+            <span class="face front"><small>Front · tap to flip</small><span class="q">In nvim, which command saves and quits?</span></span>
+            <span class="face back"><small>Back</small><span class="q"><code>:wq</code> or <code>ZZ</code> in normal mode</span></span>
+          </span>
+        </button>
+        <button class="flip" type="button" aria-pressed="false" aria-label="Cloze card. Press to reveal.">
+          <span class="flip-inner">
+            <span class="face front"><small>Cloze · tap to reveal</small><span class="q">In nvim, <span class="cloze">[…]</span> jumps to the start of the file.</span></span>
+            <span class="face back"><small>Answer</small><span class="q">In nvim, <code>gg</code> jumps to the start of the file.</span></span>
+          </span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ INSTALL ============ -->
+  <section class="section" id="install">
+    <div class="section-head reveal">
+      <p class="kicker">Install</p>
+      <h2>Up and running in two minutes.</h2>
+      <p>The installer sets up AnkiConnect, the Obsidian plugin and the skill. It is safe to run again, and backs up your plugin settings.</p>
+    </div>
+
+    <ol class="steps">
+      <li class="step reveal">
+        <span class="num">1</span>
+        <h3>Get the skill</h3>
+        <p>Download it from Agensi, or clone it from GitHub.</p>
+        <div class="cmd cmd-sm"><code>git clone https://github.com/tungsten-w/claude-anki-flashcards</code><button class="copy" type="button" data-copy="git clone https://github.com/tungsten-w/claude-anki-flashcards" aria-label="Copy command">Copy</button></div>
+      </li>
+      <li class="step reveal">
+        <span class="num">2</span>
+        <h3>Run the installer</h3>
+        <p>Give it the path of your vault. Anki must have been started once.</p>
+        <div class="cmd cmd-sm"><code>python3 install.py "/path/to/vault"</code><button class="copy" type="button" data-copy='python3 install.py "/path/to/vault"' aria-label="Copy command">Copy</button></div>
+      </li>
+      <li class="step reveal">
+        <span class="num">3</span>
+        <h3>Build a deck</h3>
+        <p>Open Claude Code in your vault and name a folder.</p>
+        <div class="cmd cmd-sm"><code>/anki-deck courses/linux</code><button class="copy" type="button" data-copy="/anki-deck courses/linux" aria-label="Copy command">Copy</button></div>
+      </li>
+    </ol>
+
+    <div class="reqs reveal">
+      <span>Anki desktop</span><span>Obsidian 1.12+</span><span>Claude Code</span><span>Python 3.9+</span><span>Linux · macOS · Windows</span>
+    </div>
+  </section>
+
+  <!-- ============ FINAL CTA ============ -->
+  <section class="final reveal">
+    <img src="mascot.png" alt="" width="120" height="120" class="final-cat">
+    <h2>Stop writing flashcards by hand.</h2>
+    <p>Spend your time reviewing, not typing.</p>
+    <div class="ctas ctas-center">
+      <a class="btn btn-primary" href="https://www.agensi.io/" rel="noopener noreferrer" target="_blank">Get it on Agensi <span aria-hidden="true">→</span></a>
+      <a class="btn btn-ghost" href="https://github.com/tungsten-w/claude-anki-flashcards" rel="noopener noreferrer" target="_blank">View on GitHub</a>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <p>Made by <a href="https://github.com/tungsten-w" rel="noopener noreferrer" target="_blank">tungsten-w</a> · <span id="year">2026</span></p>
+  <p class="small">Not affiliated with Anki, Obsidian or Anthropic. Claude is a trademark of Anthropic.</p>
+</footer>
+</body>
+</html>
